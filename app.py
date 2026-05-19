@@ -9,15 +9,11 @@ with st.sidebar:
     st.radio("選擇群組", ["工作", "家庭"])
 
 # 3. 主要內容區（三欄佈局）
-col_left, col_center, col_right = st.columns([1, 2, 1.2], gap="large")
+col_left, col_right = st.columns([1, 3], gap="large")
 
 with col_left: 
     st.write("### 新增區") 
     st.button("按鈕放左邊")
-
-with col_center: 
-    st.write("### 看板區") 
-    st.info("主要行程訊息放中間")
 
 with col_right: 
     st.write("### 設定區") 
