@@ -12,8 +12,8 @@ with st.sidebar:
 col_left, col_right = st.columns([1, 3], gap="large")
 
 with col_left: 
-    st.write("### 新增區") 
-    st.button("按鈕放左邊")
+    st.write("### 新增行程") 
+    st.button("提示")
 
 with col_right: 
     st.write("### 設定區") 
