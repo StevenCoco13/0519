@@ -80,3 +80,9 @@ view = st.segmented_control(
   ["月視角", "週視角"],
   default="月視角"
 )
+
+
+tag = st.pills(
+  "行程屬性",
+  ["#工作", "#家庭", "#緊急"]
+)
