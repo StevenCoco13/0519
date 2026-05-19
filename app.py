@@ -51,3 +51,9 @@ with col_right:
         with tab2:
             st.write("#### 這裡顯示過去已封存的歷史行程")
             st.caption("目前尚無封存行程...")
+
+
+title = st.text_input(
+  "行程主旨",
+  placeholder="請填寫會議名稱..."
+)
