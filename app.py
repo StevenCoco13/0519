@@ -63,3 +63,14 @@ title = st.text_input(
   "行程主旨",
   placeholder="請填寫會議名稱..."
 )
+
+meeting_time = st.time_input(
+  "選擇時間"
+)
+
+
+my_color = st.color_picker(
+ "挑選辨識顏色",
+ "#1A73E8"
+)
+
