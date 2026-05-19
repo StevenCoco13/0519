@@ -1,4 +1,10 @@
 import streamlit as st
+import datetime
+
+today = st.date_input(
+  "選擇日期",
+  datetime.date.today()
+)
 
 # 1. 頁面基本設定 (API 1: set_page_config)
 st.set_page_config(page_title="微型 TimeTree", layout="wide")
