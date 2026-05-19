@@ -1,104 +1,86 @@
 import streamlit as st
-import datetime
+import pandas as pd
+from datetime import datetime, timedelta
 
-today = st.date_input(
-  "選擇日期",
-  datetime.date.today()
-)
+# 1. 頁面基本設定
+st.set_page_config(page_title="參數設定後台", layout="wide")
 
-# 1. 頁面基本設定 (API 1: set_page_config)
-st.set_page_config(page_title="微型 TimeTree", layout="wide")
+st.title("⚙️ 系統參數設定與歷史報表")
+st.divider()
 
-# 2. 側邊欄設定 (API 2: sidebar)
-with st.sidebar:
-    st.write("### 📅 行事曆群組")
-    group = st.radio("選擇群組", ["工作", "家庭", "個人學習"])
-    st.divider()
-    st.write(f"目前檢視：**{group}**")
+# 2. 主要佈局：切分為左右兩欄
+col_left, col_right = st.columns([1, 1], gap="large")
 
-# 3. 主畫面雙欄佈局 (API 3: columns)
-# 依需求切分成左右兩欄，比例為 1:3
-col_left, col_right = st.columns([1, 3], gap="large")
-
-# --- 左欄：新增行程的提示區 ---
+# --- 左欄：藥丸標籤 + 多行備忘錄 ---
 with col_left:
-    st.write("### ➕ 新增行程")
-    # 這裡放新增行程的輸入欄位提示
-    todo_title = st.text_input("行程名稱", placeholder="例如：開學典禮")
-    todo_time = st.text_input("時間", placeholder="例如：09:00")
+    st.markdown("### 📝 基本配置")
     
-    if st.button("儲存行程", use_container_width=True):
-        st.success(f"已成功提示新增：{todo_title}")
+    # 藥丸標籤 (st.pills 在 Streamlit 1.35+ 支援，若版本較舊可用 st.segmented_control 或 st.radio 替代)
+    category = st.pills(
+        "選擇設定維度",
+        options=["⚡ 高性能模式", "🌱 節能模式", "🛠️ 自訂模式"],
+        default="⚡ 高性能模式"
+    )
+    
+    # 多行備忘錄
+    memo = st.text_area(
+        "備忘錄 / 變更原因說明",
+        placeholder="請輸入此次參數調整的原因或備忘紀錄...",
+        height=120
+    )
 
-# --- 右欄：行程看板區 ---
+# --- 右欄：滑動開關 + 動態數字計數器 ---
 with col_right:
-    st.write("### 📋 行程分頁看板")
+    st.markdown("### 🎛️ 進階控制")
     
-    # 使用外框容器包裹內容 (API 4: container)
-    with st.container(border=True):
-        
-        # 在容器內部嵌入一組分頁頁籤 (API 5: tabs)
-        tab1, tab2 = st.tabs(["📅 本月行程", "🗄️ 已封存行程"])
-        
-        # 頁籤 1 的內容
-        with tab1:
-            st.write("#### 這裡顯示本月未完成的行程")
-            
-            # 您原本的行程卡片範例
-            st.info("💡 提示：點擊右側按鈕可進行封存")
-            c1, c2 = st.columns([3, 1])
-            with c1:
-                st.markdown(f"**標題：** 開學典禮 ({group})")
-                st.markdown("**時間：** 09:00")
-            with c2:
-                st.button("封存", key="archive_btn1")
-                
-        # 頁籤 2 的內容
-        with tab2:
-            st.write("#### 這裡顯示過去已封存的歷史行程")
-            st.caption("目前尚無封存行程...")
+    # 滑動開關
+    enable_threshold = st.toggle("開啟監控閾值限制", value=False)
+    
+    # 條件判斷：開啟時才顯示數字計數器
+    if enable_threshold:
+        threshold_value = st.number_input(
+            "請設定觸發閾值 (單位: %)",
+            min_value=0,
+            max_value=100,
+            value=80,
+            step=5,
+            help="當數值超過此閾值時，系統將發送自動告警。"
+        )
+        st.caption(f"💡 目前已鎖定閾值：:red[{threshold_value}%]")
+    else:
+        st.caption("🔒 監控閾值已關閉，目前使用系統預設值。")
 
+st.divider()
 
-title = st.text_input(
-  "行程主旨",
-  placeholder="請填寫會議名稱..."
-)
+# 3. 最下方：展示模擬歷史設定報表
+st.markdown("### 📊 歷史設定變更報表")
 
-meeting_time = st.time_input(
-  "選擇時間"
-)
+# 建立模擬的歷史數據
+today = datetime.now()
+mock_data = {
+    "變更時間": [
+        (today - timedelta(days=1)).strftime("%Y-%m-%d %H:%M"),
+        (today - timedelta(days=3)).strftime("%Y-%m-%d %H:%M"),
+        (today - timedelta(days=5)).strftime("%Y-%m-%d %H:%M"),
+        (today - timedelta(days=7)).strftime("%Y-%m-%d %H:%M"),
+    ],
+    "設定維度": ["⚡ 高性能模式", "🌱 節能模式", "⚡ 高性能模式", "🛠️ 自訂模式"],
+    "監控狀態": ["開啟", "關閉", "開啟", "開啟"],
+    "閾值設定": ["85%", "N/A", "80%", "90%"],
+    "操作人員": ["Alex", "Bob", "Alex", "Cindy"],
+    "備忘錄說明": [
+        "因應伺服器高峰期調整",
+        "週末離峰時段切換節能",
+        "例行性系統效能最佳化",
+        "測試自訂排程變更"
+    ]
+}
 
+df = pd.DataFrame(mock_data)
 
-my_color = st.color_picker(
- "挑選辨識顏色",
- "#1A73E8"
-)
-
-
-view = st.segmented_control(
-  "檢視模式",
-  ["月視角", "週視角"],
-  default="月視角"
-)
-
-
-tag = st.pills(
-  "行程屬性",
-  ["#工作", "#家庭", "#緊急"]
-)
-
-
-note = st.text_area(
-  "行程備忘錄 / 詳細說明"
-)
-
-is_open = st.toggle(
-  "開啟 24H 郵件自動發信通知",
-  value=True
-)
-
-mins = st.number_input(
- "行程開始前幾分鐘提醒？",
- min_value=0, max_value=60,
- value=15
+# 使用 st.dataframe 展示報表，並設定欄位寬度自動調配與容器填滿
+st.dataframe(
+    df, 
+    use_container_width=True, 
+    hide_index=True
 )
