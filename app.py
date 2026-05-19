@@ -96,3 +96,9 @@ is_open = st.toggle(
   "開啟 24H 郵件自動發信通知",
   value=True
 )
+
+mins = st.number_input(
+ "行程開始前幾分鐘提醒？",
+ min_value=0, max_value=60,
+ value=15
+)
