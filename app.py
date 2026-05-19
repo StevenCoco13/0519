@@ -91,3 +91,8 @@ tag = st.pills(
 note = st.text_area(
   "行程備忘錄 / 詳細說明"
 )
+
+is_open = st.toggle(
+  "開啟 24H 郵件自動發信通知",
+  value=True
+)
