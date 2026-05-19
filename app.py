@@ -74,3 +74,9 @@ my_color = st.color_picker(
  "#1A73E8"
 )
 
+
+view = st.segmented_control(
+  "檢視模式",
+  ["月視角", "週視角"],
+  default="月視角"
+)
